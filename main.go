@@ -9,7 +9,7 @@ import (
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
-	"number"
+	"github.com/sanjayyepuri/Akira/number"
 )
 
 // Variables used for command line parameters
@@ -18,19 +18,16 @@ var (
 )
 
 func init() {
-
 	flag.StringVar(&Token, "t", "", "Bot Token")
 	flag.Parse()
 }
 
 func main() {
-
-	if len(os.Args) < 2 {
-		fmt.Println("Usage: go run main.go [BOT_TOKEN]")
+	if len(os.Args) < 3 {
+		fmt.Println("Usage: go run main.go -t [BOT_TOKEN]")
 		return
 	}
 
-	Token = os.Args[1]
 	fmt.Println("Token is " + Token)
 
 	// Create a new Discord session using the provided bot token.
@@ -64,7 +61,6 @@ func main() {
 // This function will be called (due to AddHandler above) every time a new
 // message is created on any channel that the autenticated bot has access to.
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-
 	// Ignore all messages created by the bot itself
 	// This isn't required in this specific example but it's a good practice.
 	if m.Author.ID == s.State.User.ID {
@@ -84,6 +80,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		calculation := strings.Trim(m.Content[1:], " ")
 		num, err := number.CalculateCommand(calculation)
 		if err != nil {
+			fmt.Println(err)
 			s.ChannelMessageSend(m.ChannelID, "Oops, check logs!")
 		} else {
 			output := fmt.Sprintf("%g", num)
