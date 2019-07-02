@@ -5,11 +5,9 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/sanjayyepuri/Akira/number"
 )
 
 // Variables used for command line parameters
@@ -63,28 +61,24 @@ func main() {
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Ignore all messages created by the bot itself
 	// This isn't required in this specific example but it's a good practice.
-	if m.Author.ID == s.State.User.ID {
+	if m.Author.Bot {
+		fmt.Printf("[INFO]: ignoring %s since it is a bot\n", m.Author.ID)
 		return
 	}
+
 	// If the message is "ping" reply with "Pong!"
-	if m.Content == "ping" {
-		s.ChannelMessageSend(m.ChannelID, "Pong!")
-	}
+	if m.Content != "" && m.Content[0] == '~' {
+		command := m.Content[1:]
 
-	// If the message is "pong" reply with "Ping!"
-	if m.Content == "pong" {
-		s.ChannelMessageSend(m.ChannelID, "Ping!")
-	}
+		fmt.Printf("[COMMAND]: %s\n", command)
 
-	if m.Content[0] == '!' {
-		calculation := strings.Trim(m.Content[1:], " ")
-		num, err := number.CalculateCommand(calculation)
-		if err != nil {
-			fmt.Println(err)
-			s.ChannelMessageSend(m.ChannelID, "Oops, check logs!")
-		} else {
-			output := fmt.Sprintf("%g", num)
-			s.ChannelMessageSend(m.ChannelID, output)
+		if command == "ping" {
+			s.ChannelMessageSend(m.ChannelID, "Pong!")
+		}
+
+		// If the message is "pong" reply with "Ping!"
+		if command == "pong" {
+			s.ChannelMessageSend(m.ChannelID, "Ping!")
 		}
 	}
 }
