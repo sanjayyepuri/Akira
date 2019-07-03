@@ -6,8 +6,7 @@ RUN apk add --update make git
 COPY . .
 
 ENV GO111MODULE=on
-
-RUN make build 
+RUN make 
 
 ## Akira Container 
 FROM alpine:latest 

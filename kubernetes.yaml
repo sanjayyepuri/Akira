@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: akira-bot
+spec:
+  containers:
+  - name: akira
+    image: akira
+    imagePullPolicy: Never
+    env:
+    - name: AKIRA_DISCORD_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: akira-token
+          key: akira-token
+   
