@@ -7,7 +7,6 @@ COPY . .
 
 ENV GO111MODULE=on
 
-
 RUN make build 
 
 ## Akira Container 
@@ -18,4 +17,4 @@ RUN apk --no-cache add ca-certificates
 COPY --from=builder /go/src/github.com/sanjayyepuri/Akira/bin .
 
 # TODO: use kubernetes secretes to distribute keys
-CMD ["./Akira", "-t", "<put-secret-here>"]
+CMD ["sh", "-c", "./Akira -t ${AKIRA_DISCORD_TOKEN}"]
