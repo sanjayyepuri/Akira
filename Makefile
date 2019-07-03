@@ -10,7 +10,7 @@ GOBIN=$(PROJECTDIR)/bin
 
 BINARYNAME=Akira
 
-all: test build 
+all: build test
 
 .PHONY: test
 
