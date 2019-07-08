@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
+	log "github.com/sirupsen/logrus"
 )
 
 // Variables used for command line parameters
@@ -26,13 +27,13 @@ func main() {
 		return
 	}
 
-	fmt.Println("Token is " + Token)
+	log.Info("Token is " + Token)
 
 	// Create a new Discord session using the provided bot token.
 
 	dg, err := discordgo.New("Bot " + Token)
 	if err != nil {
-		fmt.Println("error creating Discord session,", err)
+		log.Error("error creating Discord session,", err)
 		return
 	}
 
@@ -42,7 +43,7 @@ func main() {
 	// Open a websocket connection to Discord and begin listening.
 	err = dg.Open()
 	if err != nil {
-		fmt.Println("error opening connection,", err)
+		log.Error("error opening connection,", err)
 		return
 	}
 
@@ -62,7 +63,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Ignore all messages created by the bot itself
 	// This isn't required in this specific example but it's a good practice.
 	if m.Author.Bot {
-		fmt.Printf("[INFO]: ignoring %s since it is a bot\n", m.Author.ID)
+		log.Infof("ignoring author %s since it is a bot", m.Author.ID)
 		return
 	}
 
@@ -70,10 +71,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Content != "" && m.Content[0] == '~' {
 		command := m.Content[1:]
 
-		fmt.Printf("[COMMAND]: %s\n", command)
+		log.Infof("[COMMAND]: %s", command)
 
 		if command == "ping" {
-			s.ChannelMessageSend(m.ChannelID, "Pong!")
+			s.ChannelMessageSend(m.ChannelID, "Pog!")
 		}
 
 		// If the message is "pong" reply with "Ping!"

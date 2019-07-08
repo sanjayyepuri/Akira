@@ -17,7 +17,7 @@ func TestAdd(t *testing.T) {
 		t.Errorf("5 + -5 = %g; want 0", num3)
 	}
 
-	var command string = "5 - 5"
+	var command = "5 - 5"
 	out, err := number.CalculateCommand(command)
 	if err != nil {
 		t.Errorf("add command failed with %s", err)
