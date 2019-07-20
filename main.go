@@ -8,16 +8,19 @@ import (
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/sanjayyepuri/Akira/router"
 	log "github.com/sirupsen/logrus"
 )
 
 // Variables used for command line parameters
 var (
 	Token string
+	Debug bool
 )
 
 func init() {
 	flag.StringVar(&Token, "t", "", "Bot Token")
+	flag.BoolVar(&Debug, "debug", false, "Debug level")
 	flag.Parse()
 }
 
@@ -27,18 +30,28 @@ func main() {
 		return
 	}
 
+	if Debug {
+		log.SetLevel(log.DebugLevel)
+	}
+
 	log.Info("Token is " + Token)
 
 	// Create a new Discord session using the provided bot token.
-
 	dg, err := discordgo.New("Bot " + Token)
 	if err != nil {
 		log.Error("error creating Discord session,", err)
 		return
 	}
 
+	commandRouter := router.NewRouter().WithPrefix("~")
+
+	commandRouter.RegisterCommand("pog", handlePog)
+	commandRouter.RegisterCommand("ping", handlePing)
+	commandRouter.RegisterCommand("pong", handlePong)
+
 	// Register the messageCreate func as a callback for MessageCreate events.
-	dg.AddHandler(messageCreate)
+	//dg.AddHandler(messageCreate)
+	dg.AddHandler(commandRouter.Handler)
 
 	// Open a websocket connection to Discord and begin listening.
 	err = dg.Open()
@@ -57,29 +70,14 @@ func main() {
 	dg.Close()
 }
 
-// This function will be called (due to AddHandler above) every time a new
-// message is created on any channel that the autenticated bot has access to.
-func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-	// Ignore all messages created by the bot itself
-	// This isn't required in this specific example but it's a good practice.
-	if m.Author.Bot {
-		log.Infof("ignoring author %s since it is a bot", m.Author.ID)
-		return
-	}
+func handlePog(request *discordgo.MessageCreate, response *discordgo.Session) {
+	response.ChannelMessageSend(request.ChannelID, "POGGGGG!!!!")
+}
 
-	// If the message is "ping" reply with "Pong!"
-	if m.Content != "" && m.Content[0] == '~' {
-		command := m.Content[1:]
+func handlePing(request *discordgo.MessageCreate, response *discordgo.Session) {
+	response.ChannelMessageSend(request.ChannelID, "Pong!")
+}
 
-		log.Infof("[COMMAND]: %s", command)
-
-		if command == "ping" {
-			s.ChannelMessageSend(m.ChannelID, "Pog!")
-		}
-
-		// If the message is "pong" reply with "Ping!"
-		if command == "pong" {
-			s.ChannelMessageSend(m.ChannelID, "Ping!")
-		}
-	}
+func handlePong(request *discordgo.MessageCreate, response *discordgo.Session) {
+	response.ChannelMessageSend(request.ChannelID, "Ping!")
 }

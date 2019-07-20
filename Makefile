@@ -24,7 +24,7 @@ build:
 	@GOBIN=$(GOBIN) $(GOBUILD) -o $(GOBIN)/$(BINARYNAME) -v 
 
 run: build 
-	@$(GOBIN)/$(BINARYNAME) -t $(AKIRA_TOKEN)
+	@$(GOBIN)/$(BINARYNAME) -t $(AKIRA_TOKEN) -debug
 
 docker: 
 	@$(DOCKERCMD) build -t $(IMAGENAME)  .
